@@ -5,9 +5,7 @@ const {Url} = require('./models/url');
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.get('/', (req,res) => {
-  res.send('Hello express');
-});
+app.use(express.static(__dirname + '/public'));
 
 app.get('/new/:protocol/*', (req, res) => {
   let protocol = req.params.protocol;
@@ -20,7 +18,7 @@ app.get('/new/:protocol/*', (req, res) => {
   }
 
   let randomNum = (Math.floor(Math.random() * (9999-1000) + 1000));
-  let short_url = req.hostname + '/' + randomNum;
+  let short_url = 'http://' + req.hostname + '/' + randomNum;
   let long_url = protocol + '/' + address;
 
   let url = new Url({
@@ -30,7 +28,10 @@ app.get('/new/:protocol/*', (req, res) => {
   });
 
   url.save().then((doc) => {
-    res.send(doc);
+    res.send({
+      long_url: doc.long_url,
+      short_url: doc.short_url
+    });
   }).catch((err) => {
     res.status(400).send(err);
   });
