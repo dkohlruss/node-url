@@ -37,7 +37,19 @@ app.get('/new/:protocol/*', (req, res) => {
 });
 
 app.get('/:stub', (req,res) => {
+  let stub = req.params.stub;
 
+  Url.findOne({
+    stub
+  }).then((url) => {
+    if (!url) {
+      return res.status(404).send();
+    }
+
+    res.redirect(url.long_url);
+  }).catch((err) => {
+    res.status(400).send(err);
+  })
 });
 
 app.listen(port, () => {
